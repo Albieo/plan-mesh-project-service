@@ -13,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Project> Projects => Set<Project>();
     public DbSet<Feature> Features => Set<Feature>();
     public DbSet<UserStory> UserStories => Set<UserStory>();
+    public DbSet<TaskItem> TaskItems => Set<TaskItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,6 +27,11 @@ public class AppDbContext : DbContext
             .HasMany(f => f.UserStories)
             .WithOne(us => us.Feature)
             .HasForeignKey(us => us.FeatureId)
+            .OnDelete(DeleteBehavior.Cascade);
+        modelBuilder.Entity<UserStory>()
+            .HasMany(us => us.TaskItems)
+            .WithOne(ti => ti.UserStory)
+            .HasForeignKey(ti => ti.UserStoryId)
             .OnDelete(DeleteBehavior.Cascade);
     }
 }
