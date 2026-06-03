@@ -1,0 +1,49 @@
+@ProjectService_HostAddress = http://localhost:5000
+@id = 773aa09a-3709-4916-97a8-3e0b6efb200b
+
+### Health Check
+GET {{ProjectService_HostAddress}}/health
+Accept: application/json
+
+###
+
+### Get All Projects
+GET {{ProjectService_HostAddress}}/projects
+Accept: application/json
+
+###
+
+### Get Project by ID
+GET {{ProjectService_HostAddress}}/projects/{{id}}
+Accept: application/json
+
+###
+
+### Create New Project
+POST {{ProjectService_HostAddress}}/projects
+Content-Type: application/json
+
+{
+  "name": "New Project",
+  "description": "Description of the new project",
+  "ownerUserId": "12345678-1234-1234-1234-1234567890ab"
+}
+
+###
+
+### Update Existing Project
+PUT {{ProjectService_HostAddress}}/projects/{{id}}
+Content-Type: application/json
+
+{
+  "name": "Updated Project Name",
+  "description": "Updated description of the project"
+}
+
+###
+
+### Delete Project
+DELETE {{ProjectService_HostAddress}}/projects/{{id}}
+Accept: application/json
+
+###

@@ -1,0 +1,46 @@
+# Build results
+bin/
+obj/
+out/
+publish/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.sln.docstates
+
+# IDE and editor state
+.vs/
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Local tooling/cache files
+*.lscache
+.ionide/
+.omnisharp/
+
+# Logs
+*.log
+logs/
+
+# Environment and local configuration
+.env
+.env.*
+appsettings.Local.json
+appsettings.*.Local.json
+secrets.json
+
+# Test and coverage output
+TestResults/
+coverage/
+coverage.*
+*.coverage
+*.coveragexml
+
+# OS files
+.DS_Store
+Thumbs.db
