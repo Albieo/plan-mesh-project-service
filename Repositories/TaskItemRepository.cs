@@ -18,6 +18,14 @@ public class TaskItemRepository : ITaskItemRepository
         return await _context.TaskItems.Where(ti => ti.UserStoryId == userStoryId).ToListAsync();
     }
 
+    public async Task<List<TaskItem>> GetByFeatureIdAsync(Guid featureId)
+    {
+        return await _context.TaskItems
+            .Include(ti => ti.UserStory)
+            .Where(ti => ti.UserStory.FeatureId == featureId)
+            .ToListAsync();
+    }
+
     public async Task<TaskItem?> GetByIdAsync(Guid id)
     {
         return await _context.TaskItems.FindAsync(id);

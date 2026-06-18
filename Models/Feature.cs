@@ -16,6 +16,9 @@ public class Feature
     public Project Project { get; set; } = null!;
 
     public ICollection<UserStory> UserStories { get; set; } = new List<UserStory>();
+
+    [Required]
+    public TaskStatus Status { get; set; } = TaskStatus.ToDo;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

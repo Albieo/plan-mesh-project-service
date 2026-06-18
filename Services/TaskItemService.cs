@@ -1,6 +1,7 @@
 using ProjectService.DTOs;
 using ProjectService.Models;
 using ProjectService.Repositories;
+using TaskStatus = ProjectService.Models.TaskStatus;
 
 namespace ProjectService.Services;
 
@@ -8,11 +9,16 @@ public class TaskItemService: ITaskItemService
 {
     private readonly IUserStoryRepository _userStoryRepository;
     private readonly ITaskItemRepository _taskItemRepository;
+    private readonly IFeatureRepository _featureRepository;
 
-    public TaskItemService(IUserStoryRepository userStoryRepository, ITaskItemRepository taskItemRepository)
+    public TaskItemService(
+        IUserStoryRepository userStoryRepository,
+        ITaskItemRepository taskItemRepository,
+        IFeatureRepository featureRepository)
     {
         _userStoryRepository = userStoryRepository;
         _taskItemRepository = taskItemRepository;
+        _featureRepository = featureRepository;
     }
 
     public async Task<List<TaskItemResponse>> GetUserStoryTaskItemsAsync(Guid userStoryId)
@@ -23,6 +29,7 @@ public class TaskItemService: ITaskItemService
             Id = ti.Id,
             UserStoryId = ti.UserStoryId,
             Name = ti.Name,
+            Status = ti.Status,
             CreatedAt = ti.CreatedAt
         }).ToList();
     }
@@ -37,6 +44,7 @@ public class TaskItemService: ITaskItemService
             Id = taskItem.Id,
             UserStoryId = taskItem.UserStoryId,
             Name = taskItem.Name,
+            Status = taskItem.Status,
             CreatedAt = taskItem.CreatedAt
         };
     }
@@ -49,15 +57,19 @@ public class TaskItemService: ITaskItemService
         var taskItem = new TaskItem
         {
             UserStoryId = userStoryId,
-            Name = request.Name
+            Name = request.Name,
+            Status = request.Status ?? TaskStatus.ToDo
         };
 
         var createdTaskItem = await _taskItemRepository.CreateAsync(taskItem);
+        await SyncFeatureStatusAsync(createdTaskItem);
+
         return new TaskItemResponse
         {
             Id = createdTaskItem.Id,
             UserStoryId = createdTaskItem.UserStoryId,
             Name = createdTaskItem.Name,
+            Status = createdTaskItem.Status,
             CreatedAt = createdTaskItem.CreatedAt
         };
     }
@@ -68,15 +80,22 @@ public class TaskItemService: ITaskItemService
         if (taskItem == null || taskItem.UserStoryId != userStoryId) return null;
 
         taskItem.Name = request.Name;
+        if (request.Status.HasValue)
+        {
+            taskItem.Status = request.Status.Value;
+        }
 
         var updatedTaskItem = await _taskItemRepository.UpdateAsync(taskItem);
         if (updatedTaskItem == null) return null;
+
+        await SyncFeatureStatusAsync(updatedTaskItem);
 
         return new TaskItemResponse
         {
             Id = updatedTaskItem.Id,
             UserStoryId = updatedTaskItem.UserStoryId,
             Name = updatedTaskItem.Name,
+            Status = updatedTaskItem.Status,
             CreatedAt = updatedTaskItem.CreatedAt
         };
     }
@@ -87,7 +106,36 @@ public class TaskItemService: ITaskItemService
         if (taskItem == null || taskItem.UserStoryId != userStoryId) return false;
 
         await _taskItemRepository.DeleteAsync(taskItem);
+        await SyncFeatureStatusAsync(taskItem);
 
         return true;
+    }
+
+    private async Task SyncFeatureStatusAsync(TaskItem taskItem)
+    {
+        var userStory = await _userStoryRepository.GetByIdAsync(taskItem.UserStoryId);
+        if (userStory == null) return;
+
+        var feature = await _featureRepository.GetByIdAsync(userStory.FeatureId);
+        if (feature == null) return;
+
+        var taskItems = await _taskItemRepository.GetByFeatureIdAsync(feature.Id);
+        if (!taskItems.Any())
+        {
+            if (feature.Status != TaskStatus.ToDo)
+            {
+                feature.Status = TaskStatus.ToDo;
+                await _featureRepository.UpdateAsync(feature);
+            }
+
+            return;
+        }
+
+        var firstStatus = taskItems[0].Status;
+        if (taskItems.All(t => t.Status == firstStatus) && feature.Status != firstStatus)
+        {
+            feature.Status = firstStatus;
+            await _featureRepository.UpdateAsync(feature);
+        }
     }
 }

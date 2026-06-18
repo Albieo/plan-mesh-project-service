@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using ProjectService.Models;
 
 namespace ProjectService.DTOs;
 
@@ -10,6 +11,8 @@ public class UpdateFeatureRequest : IValidatableObject
 
     [MaxLength(2000)]
     public string? Description { get; set; }
+
+    public TaskStatus? Status { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

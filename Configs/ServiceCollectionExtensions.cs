@@ -71,9 +71,11 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<IFeatureRepository, FeatureRepository>();
         services.AddScoped<IUserStoryRepository, UserStoryRepository>();
+        services.AddScoped<ITaskItemRepository, TaskItemRepository>();
         services.AddScoped<IProjectService, ProjectsService>();
         services.AddScoped<IFeatureService, FeatureService>();
         services.AddScoped<IUserStoryService, UserStoryService>();
+        services.AddScoped<ITaskItemService, TaskItemService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
 
         return services;

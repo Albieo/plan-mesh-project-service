@@ -23,7 +23,8 @@ public class FeatureService: IFeatureService
             Id = f.Id,
             ProjectId = f.ProjectId,
             Name = f.Name,
-            Description = f.Description
+            Description = f.Description,
+            Status = f.Status
         }).ToList();
     }
 
@@ -37,7 +38,8 @@ public class FeatureService: IFeatureService
             Id = feature.Id,
             ProjectId = feature.ProjectId,
             Name = feature.Name,
-            Description = feature.Description
+            Description = feature.Description,
+            Status = feature.Status
         };
     }
 
@@ -60,6 +62,7 @@ public class FeatureService: IFeatureService
             ProjectId = createdFeature.ProjectId,
             Name = createdFeature.Name,
             Description = createdFeature.Description,
+            Status = createdFeature.Status,
             CreatedAt = createdFeature.CreatedAt
         };
     }
@@ -81,6 +84,7 @@ public class FeatureService: IFeatureService
             ProjectId = feature.ProjectId,
             Name = updatedFeature.Name,
             Description = updatedFeature.Description,
+            Status = feature.Status,
             CreatedAt = feature.CreatedAt
         };
     }

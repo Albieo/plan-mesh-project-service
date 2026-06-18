@@ -13,5 +13,8 @@ public class TaskItem
 
     public UserStory UserStory { get; set; } = null!;
 
+    [Required]
+    public TaskStatus Status { get; set; } = TaskStatus.ToDo;
+
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }

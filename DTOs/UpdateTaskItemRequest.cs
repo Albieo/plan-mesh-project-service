@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using TaskStatus = ProjectService.Models.TaskStatus;
 
 namespace ProjectService.DTOs;
 
@@ -7,6 +8,8 @@ public class UpdateTaskItemRequest : IValidatableObject
     [Required]
     [MaxLength(200)]
     public string Name { get; set; } = "General";
+
+    public TaskStatus? Status { get; set; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {

@@ -26,7 +26,8 @@ public class FeatureController : ControllerBase
             Id = feature.Id,
             ProjectId = feature.ProjectId,
             Name = feature.Name,
-            Description = feature.Description
+            Description = feature.Description,
+            Status = feature.Status
         }).ToList();
 
         return Ok(response);
@@ -45,7 +46,8 @@ public class FeatureController : ControllerBase
             Id = feature.Id,
             ProjectId = feature.ProjectId,
             Name = feature.Name,
-            Description = feature.Description
+            Description = feature.Description,
+            Status = feature.Status
         };
 
         return Ok(response);
