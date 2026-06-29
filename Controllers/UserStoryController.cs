@@ -18,14 +18,14 @@ public class UserStoryController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<UserStoryResponse>>> GetFeatureUserStories(Guid projectId, Guid featureId)
+    public async Task<ActionResult<List<UserStoryResponse>>> GetFeatureUserStories(Guid featureId)
     {
         var userStories = await _userStoryService.GetFeatureUserStoriesAsync(featureId);
         return Ok(userStories);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<UserStoryResponse>> GetUserStory(Guid projectId, Guid featureId, Guid id)
+    public async Task<ActionResult<UserStoryResponse>> GetUserStory(Guid featureId, Guid id)
     {
         var userStory = await _userStoryService.GetUserStoryByIdAsync(featureId, id);
 
@@ -44,7 +44,7 @@ public class UserStoryController : ControllerBase
     }
 
     [HttpPut("{userStoryId:guid}")]
-    public async Task<ActionResult<UserStoryResponse>> UpdateUserStory(Guid projectId, Guid featureId, Guid userStoryId, UpdateUserStoryRequest request)
+    public async Task<ActionResult<UserStoryResponse>> UpdateUserStory(Guid featureId, Guid userStoryId, UpdateUserStoryRequest request)
     {
         var userStory = await _userStoryService.UpdateUserStoryAsync(featureId, userStoryId, request);
         if (userStory == null) return NotFound("User story not found");
@@ -53,7 +53,7 @@ public class UserStoryController : ControllerBase
     }
 
     [HttpDelete("{userStoryId:guid}")]
-    public async Task<IActionResult> DeleteUserStory(Guid projectId, Guid featureId, Guid userStoryId)
+    public async Task<IActionResult> DeleteUserStory(Guid featureId, Guid userStoryId)
     {
         var result = await _userStoryService.DeleteUserStoryAsync(featureId, userStoryId);
         if (!result) return NotFound("User story not found");
