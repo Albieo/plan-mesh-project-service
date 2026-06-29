@@ -18,14 +18,16 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<TaskItemResponse>>> GetUserStoryTaskItems(Guid userStoryId)
+    public async Task<ActionResult<List<TaskItemResponse>>> GetUserStoryTaskItems(
+        Guid projectId, Guid featureId, Guid userStoryId)
     {
         var taskItems = await _taskItemService.GetUserStoryTaskItemsAsync(userStoryId);
         return Ok(taskItems);
     }
 
     [HttpGet("{id:guid}")]
-    public async Task<ActionResult<TaskItemResponse>> GetTaskItem(Guid userStoryId, Guid id)
+    public async Task<ActionResult<TaskItemResponse>> GetTaskItem(
+        Guid projectId, Guid featureId, Guid userStoryId, Guid id)
     {
         var taskItem = await _taskItemService.GetTaskItemByIdAsync(userStoryId, id);
 
@@ -36,27 +38,33 @@ public class TaskItemController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<TaskItemResponse>> CreateTaskItem(Guid userStoryId, CreateTaskItemRequest request)
+    public async Task<ActionResult<TaskItemResponse>> CreateTaskItem(
+        Guid projectId, Guid featureId, Guid userStoryId, [FromBody] CreateTaskItemRequest request)
     {
         var taskItem = await _taskItemService.CreateTaskItemAsync(userStoryId, request);
-        if (taskItem == null) return NotFound("User story not found");
-        return CreatedAtAction(nameof(GetTaskItem), new { userStoryId, id = taskItem.Id }, taskItem);
+        if (taskItem == null)
+            return NotFound("User story not found.");
+        return CreatedAtAction(nameof(GetTaskItem), new { projectId, featureId, userStoryId, id = taskItem.Id }, taskItem);
     }
 
     [HttpPut("{taskItemId:guid}")]
-    public async Task<ActionResult<TaskItemResponse>> UpdateTaskItem(Guid userStoryId, Guid taskItemId, UpdateTaskItemRequest request)
+    public async Task<ActionResult<TaskItemResponse>> UpdateTaskItem(
+        Guid projectId, Guid featureId, Guid userStoryId, Guid taskItemId, [FromBody] UpdateTaskItemRequest request)
     {
         var taskItem = await _taskItemService.UpdateTaskItemAsync(userStoryId, taskItemId, request);
-        if (taskItem == null) return NotFound("Task item not found");
+        if (taskItem == null)
+            return NotFound("Task item not found");
 
         return Ok(taskItem);
     }
 
     [HttpDelete("{taskItemId:guid}")]
-    public async Task<IActionResult> DeleteTaskItem(Guid userStoryId, Guid taskItemId)
+    public async Task<IActionResult> DeleteTaskItem(
+        Guid projectId, Guid featureId, Guid userStoryId, Guid taskItemId)
     {
         var result = await _taskItemService.DeleteTaskItemAsync(userStoryId, taskItemId);
-        if (!result) return NotFound("Task item not found");
+        if (!result)
+            return NotFound("Task item not found");
         return NoContent();
     }
 }

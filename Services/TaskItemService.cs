@@ -56,6 +56,7 @@ public class TaskItemService: ITaskItemService
         var taskItem = new TaskItem
         {
             UserStoryId = userStoryId,
+            UserStory = userStory,
             Name = request.Name,
             Status = request.Status ?? ProjectTaskStatus.ToDo
         };
@@ -104,8 +105,15 @@ public class TaskItemService: ITaskItemService
         var taskItem = await _taskItemRepository.GetByIdAsync(taskItemId);
         if (taskItem == null || taskItem.UserStoryId != userStoryId) return false;
 
+        var userStory = await _userStoryRepository.GetByIdAsync(userStoryId);
+        var featureIdForSync = userStory?.FeatureId;
+
         await _taskItemRepository.DeleteAsync(taskItem);
-        await SyncFeatureStatusAsync(taskItem);
+
+        if (featureIdForSync.HasValue)
+        {
+            await SyncFeatureStatusFromFeatureIdAsync(featureIdForSync.Value);
+        }
 
         return true;
     }
@@ -115,10 +123,15 @@ public class TaskItemService: ITaskItemService
         var userStory = await _userStoryRepository.GetByIdAsync(taskItem.UserStoryId);
         if (userStory == null) return;
 
-        var feature = await _featureRepository.GetByIdAsync(userStory.FeatureId);
+        await SyncFeatureStatusFromFeatureIdAsync(userStory.FeatureId);
+    }
+
+    private async Task SyncFeatureStatusFromFeatureIdAsync(Guid featureId)
+    {
+        var feature = await _featureRepository.GetByIdAsync(featureId);
         if (feature == null) return;
 
-        var taskItems = await _taskItemRepository.GetByFeatureIdAsync(feature.Id);
+        var taskItems = await _taskItemRepository.GetByFeatureIdAsync(featureId);
         if (!taskItems.Any())
         {
             if (feature.Status != ProjectTaskStatus.ToDo)
@@ -130,10 +143,15 @@ public class TaskItemService: ITaskItemService
             return;
         }
 
-        var firstStatus = taskItems[0].Status;
-        if (taskItems.All(t => t.Status == firstStatus) && feature.Status != firstStatus)
+        var allSameStatus = taskItems.All(t => t.Status == taskItems[0].Status);
+        if (allSameStatus && feature.Status != taskItems[0].Status)
         {
-            feature.Status = firstStatus;
+            feature.Status = taskItems[0].Status;
+            await _featureRepository.UpdateAsync(feature);
+        }
+        else if (!allSameStatus && feature.Status != ProjectTaskStatus.InProgress)
+        {
+            feature.Status = ProjectTaskStatus.InProgress;
             await _featureRepository.UpdateAsync(feature);
         }
     }

@@ -7,7 +7,7 @@ public class UpdateTaskItemRequest : IValidatableObject
 {
     [Required]
     [MaxLength(200)]
-    public string Name { get; set; } = "General";
+    public string Name { get; set; } = string.Empty;
 
     public ProjectTaskStatus? Status { get; set; }
 
