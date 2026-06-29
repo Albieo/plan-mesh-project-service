@@ -1,6 +1,6 @@
 namespace ProjectService.Models;
 
-public enum TaskStatus
+public enum ProjectTaskStatus
 {
     ToDo,
     InProgress,

@@ -1,4 +1,4 @@
-using TaskStatus = ProjectService.Models.TaskStatus;
+using ProjectService.Models;
 
 namespace ProjectService.DTOs;
 
@@ -6,5 +6,5 @@ public class CreateTaskItemRequest
 {
     public string Name { get; set; } = "General";
 
-    public TaskStatus? Status { get; set; }
+    public ProjectTaskStatus? Status { get; set; }
 }

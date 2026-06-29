@@ -1,7 +1,6 @@
 using ProjectService.DTOs;
 using ProjectService.Models;
 using ProjectService.Repositories;
-using TaskStatus = ProjectService.Models.TaskStatus;
 
 namespace ProjectService.Services;
 
@@ -58,7 +57,7 @@ public class TaskItemService: ITaskItemService
         {
             UserStoryId = userStoryId,
             Name = request.Name,
-            Status = request.Status ?? TaskStatus.ToDo
+            Status = request.Status ?? ProjectTaskStatus.ToDo
         };
 
         var createdTaskItem = await _taskItemRepository.CreateAsync(taskItem);
@@ -122,9 +121,9 @@ public class TaskItemService: ITaskItemService
         var taskItems = await _taskItemRepository.GetByFeatureIdAsync(feature.Id);
         if (!taskItems.Any())
         {
-            if (feature.Status != TaskStatus.ToDo)
+            if (feature.Status != ProjectTaskStatus.ToDo)
             {
-                feature.Status = TaskStatus.ToDo;
+                feature.Status = ProjectTaskStatus.ToDo;
                 await _featureRepository.UpdateAsync(feature);
             }
 

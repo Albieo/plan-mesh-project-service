@@ -1,4 +1,4 @@
-using TaskStatus = ProjectService.Models.TaskStatus;
+using ProjectService.Models;
 
 namespace ProjectService.DTOs;
 
@@ -12,5 +12,5 @@ public class FeatureGetResponse
 
     public string? Description { get; set; }
 
-    public TaskStatus Status { get; set; }
+    public ProjectTaskStatus Status { get; set; }
 }

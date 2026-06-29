@@ -18,7 +18,7 @@ public class Feature
     public ICollection<UserStory> UserStories { get; set; } = new List<UserStory>();
 
     [Required]
-    public TaskStatus Status { get; set; } = TaskStatus.ToDo;
+    public ProjectTaskStatus Status { get; set; } = ProjectTaskStatus.ToDo;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 }
