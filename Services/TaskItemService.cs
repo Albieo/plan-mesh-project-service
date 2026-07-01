@@ -1,6 +1,7 @@
 using ProjectService.DTOs;
 using ProjectService.Models;
 using ProjectService.Repositories;
+using ProjectService.Utilities;
 
 namespace ProjectService.Services;
 
@@ -143,15 +144,10 @@ public class TaskItemService: ITaskItemService
             return;
         }
 
-        var allSameStatus = taskItems.All(t => t.Status == taskItems[0].Status);
-        if (allSameStatus && feature.Status != taskItems[0].Status)
+        var derivedStatus = FeatureStatusResolver.Resolve(taskItems);
+        if (feature.Status != derivedStatus)
         {
-            feature.Status = taskItems[0].Status;
-            await _featureRepository.UpdateAsync(feature);
-        }
-        else if (!allSameStatus && feature.Status != ProjectTaskStatus.InProgress)
-        {
-            feature.Status = ProjectTaskStatus.InProgress;
+            feature.Status = derivedStatus;
             await _featureRepository.UpdateAsync(feature);
         }
     }
